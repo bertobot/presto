@@ -63,7 +63,7 @@ sub init {
 sub decode {
 	my ($self, $args) = @_;
 
-	while ($args =~ /(%..)/) {
+	while ($args =~ /%(..)/) {
 		my $matched = $1;
 		my $dec = sprintf "%d", $matched;
 		my $replacement = sprintf "%c", $dec;

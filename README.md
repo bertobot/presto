@@ -29,13 +29,16 @@ $app->get("/hello", \&helloworld);
 $app->get('/test', sub {
         my ($req, $res) = @_;
 
+        # begin chunk transfer encoding
         $res->begin();
 
         foreach my $p (keys %{ $req->params }) {
+                # send chunk
                 $res->chunk(sprintf("%s => %s\n", $p, $req->params->{$p}) );
         }
 
-        $res->chunk("", 1);
+        # send an empty chunk to finish the chunk encoding.
+        $res->chunk;
 });
 
 # json example

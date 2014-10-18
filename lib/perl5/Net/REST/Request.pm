@@ -29,7 +29,7 @@ sub init {
 
 	$self->method($tokens[0]);
 
-	$self->uri($self->decode($tokens[1] ) );
+	$self->uri($tokens[1]);
 
 	$self->path($tokens[1]);
 
@@ -40,7 +40,7 @@ sub init {
 
 		$self->query($');
 
-		my @p = split /\&/, $';
+		my @p = split /\&/, $self->decode($');
 
 		foreach my $param (@p) {
 			my ($k, $v) = split /=/, $param;
@@ -63,10 +63,9 @@ sub init {
 sub decode {
 	my ($self, $args) = @_;
 
-	while ($args =~ /%(..)/) {
+	while ($args =~ /(%(..))/) {
 		my $matched = $1;
-		my $dec = sprintf "%d", $matched;
-		my $replacement = sprintf "%c", $dec;
+		my $replacement = chr(hex($2) );
 
 		$args =~ s/$matched/$replacement/g;
 	}

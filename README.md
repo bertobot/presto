@@ -38,6 +38,27 @@ $app->get('/test', sub {
         $res->chunk("", 1);
 });
 
+# json example
+
+use JSON;
+
+$app->post('/json/post', sub {
+        my ($req, $res) = @_;
+        
+        my $jsonstr = $req->body;
+        
+        my $jshash = decode_json($jsonstr);
+        
+        # do something with that data
+        
+        $res->write( encode_json( { 'status' => 'ok' }, { type => 'application/json' } ) );
+});
+
+$app->get('/json/get', sub {
+        # lazy one liner
+        $_[1]->write( encode_json({ key => 'value', anotherKey => [] }), { type => 'application/json' } );
+});
+
 # run
 
 $app->run();

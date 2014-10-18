@@ -29,7 +29,7 @@ sub init {
 
 	$self->method($tokens[0]);
 
-	$self->uri($tokens[1]);
+	$self->uri($self->decode($tokens[1] ) );
 
 	$self->path($tokens[1]);
 
@@ -58,6 +58,20 @@ sub init {
 
 		$self->headers->{$tokens[0]} = $tokens[1];
 	}
+}
+
+sub decode {
+	my ($self, $args) = @_;
+
+	while ($args =~ /%../) {
+		my $matched = $@;
+		my $dec = sprintf "%d", $matched;
+		my $replacement = sprintf "%c", $dec;
+
+		$args =~ s/$matched/$replacement/g;
+	}
+
+	return $args;
 }
 
 1;

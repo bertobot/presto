@@ -74,4 +74,7 @@ $app->run();
 - IO::Select
 
 ## TODO
-- [ ] support placeholder shortcuts like */hello/:name*
+- [ ] Support placeholder shortcuts like */hello/:name*
+- [ ] Document the three objects (Request, Response and REST) of this project.
+- [ ] Support redirect, forward in Response object.
+- [ ] Built-in support for JSON ?

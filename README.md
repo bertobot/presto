@@ -81,3 +81,39 @@ $app->run();
 - [ ] Document the three objects (Request, Response and REST) of this project.
 - [ ] Support redirect, forward in Response object.
 - [ ] Built-in support for JSON ?
+
+## Methods
+### Net::REST
+
+* get() - HTTP GET method handler.
+* post() - HTTP POST method handler.
+* put() - HTTP PUT method handler.
+* delete() - HTTP DELETE method handler.
+
+* onLoopBegin() - hook on loop start.
+* onLoopEnd() - hook on loop end.
+* onConnect() - hook on connection established.  Provides the callback with the IO::Socket::INET object.
+* onNoConnection() - hook on no-connections received.
+
+* run() - runs the loop event.  
+
+### Net::REST::Request
+* uri - the raw uri of the request
+* path - the interpreted path of the request.
+* query - the query portion of the request.
+* params - any passed parameters on the request line.
+* error - message of the error encountered.
+* method - request method.
+* version - HTTP request version.
+* headers - HTTP headers of the request.
+
+### Net::REST::Response
+* type - the content-type shortcut of the response.
+* headers - HTTP headers to respond with.
+* status - HTTP status code to respond with.
+
+* write($body, $args) - respond with $body as the payload.  $args is a hash reference to include with the response, like the *type* shortcut or to provide headers.
+
+* begin($args) - begin a response with **Encoding-Type: chunked**.  $args is a hash reference to include with the response, like the *type* shortcut or to provide headers.
+
+* chunk($body) - send the next payload chunk.  Send and empty chunk() call to end the chunked-type encoding.

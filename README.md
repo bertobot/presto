@@ -67,6 +67,43 @@ $app->get('/json/get', sub {
 $app->run();
 ```
 
+## Hooks Example:
+```perl
+use Net::REST;
+
+...
+
+my $stats = {
+        loops   => 0,
+        clients => 0,
+        idle    => 0,
+};
+
+$app->onConnect(sub {
+        my $clientsocket = shift;
+        
+        # print the client connection info on-connect:
+        printf "%s:%s has connected.\n", $clientsocket->peerhost, $clientsocket->peerport;
+        
+        $stats->{clients}++;
+});
+
+# could be handled in onLoopEnd, also.  Your choice.
+$app-onLoopBegin(sub { $stats->{loops}++ } );
+
+$app->onNoConnection(sub { 
+        $stats->{idle}++;
+        
+        # maybe perform some kind of 'household' task...
+        # like publish stats
+});
+
+...
+
+$app->run;
+
+```
+
 ## Features
 - GET, POST, PUT, DELETE handling.
 - Write standalone REST servers that can then be fronted by nginx, etc.
@@ -78,7 +115,7 @@ $app->run();
 
 ## TODO
 - [ ] Support placeholder shortcuts like */hello/:name*
-- [ ] Document the three objects (Request, Response and REST) of this project.
+- [X] Document the three objects (Request, Response and REST) of this project.
 - [ ] Support redirect, forward in Response object.
 - [ ] Built-in support for JSON ?
 

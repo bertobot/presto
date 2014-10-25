@@ -26,6 +26,14 @@ $app->get('/test', sub {
 
 	$res->chunk("", 1);
 });
+
+$app->onLoopBegin(sub { print "starting loop\n"; } );
+
+$app->onLoopEnd(sub { print "ending loop\n"; } );
+
+$app->onNoConnection(sub { print "nobody wants to play with me\n"; } );
+
+$app->onConnect( sub { printf "%s:%s connected.\n", $_[0]->peerhost, $_[0]->peerport; } );
 		
 
 #$app->get("/hellojson/:name", sub {

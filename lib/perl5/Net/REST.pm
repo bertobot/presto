@@ -8,7 +8,7 @@ use IO::Socket::INET;
 use IO::Select;
 
 use Class::MethodMaker [
-	scalar	=> [ qw( host port urimap ) ],
+	scalar	=> [ qw( host port urimap timeout onLoopBegin onLoopEnd onConnect onNoConnection ) ],
 	new	=> [ qw( -init new ) ],
 ];
 
@@ -19,7 +19,17 @@ sub init {
 
 	$self->port($args->{port} || 2020);
 
+	$self->timeout($args->{timeout} || 5);
+
 	$self->urimap({});
+
+	$self->onLoopBegin($args->{onLoopBegin});
+
+	$self->onLoopEnd($args->{onLoopEnd});
+
+	$self->onConnect($args->{onConnect});
+
+	$self->onNoConnection($args->{onNoConnection});
 }
 
 sub get {
@@ -61,7 +71,15 @@ sub run {
 
 	while (1) {
 
-		my @ready = $select->can_read(1);
+		if (defined $self->onLoopBegin) {
+			&{ $self->onLoopBegin };
+		}
+
+		my @ready = $select->can_read( $self->timeout );
+
+		if (! @ready && defined $self->onNoConnection) {
+			&{ $self->onNoConnection };
+		}
 
 		foreach my $r (@ready) {
 			if ($r == $server) {
@@ -69,6 +87,10 @@ sub run {
 				my $client = $r->accept;
 
 				$select->add($client);
+
+				if (defined $self->onConnect) {
+					&{ $self->onConnect }($client);
+				}
 			}
 			else{
 
@@ -84,6 +106,10 @@ sub run {
 
 				$r->close;
 			}
+		}
+
+		if (defined $self->onLoopEnd) {
+			&{ $self->onLoopEnd };
 		}
 
 		# loops forever until killed.

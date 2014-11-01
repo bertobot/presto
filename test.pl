@@ -3,17 +3,30 @@
 use strict;
 
 use lib 'lib/perl5';
+use Data::Dumper;
 use Net::REST;
 
 sub helloworld {
 	my ($request, $response) = @_;
 
-	$response->write("hello world!");
+    my $subject = $request->params->{name} || 'world';
+
+    print Dumper $request;
+
+	$response->write("hello $subject!");
 }
 
 my $app = new Net::REST({ port => 2020 });
 
 $app->get("/hello", \&helloworld);
+
+$app->get("/hello/:name", \&helloworld);
+
+$app->get("/hello2/:name/:back", \&helloworld);
+
+$app->get("/blah/*blah", sub {
+    print Dumper @_;
+});
 
 $app->get('/test', sub {
 	my ($req, $res) = @_;

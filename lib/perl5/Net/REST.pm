@@ -8,7 +8,7 @@ use IO::Socket::INET;
 use IO::Select;
 
 use Class::MethodMaker [
-	scalar	=> [ qw( host port urimap timeout onLoopBegin onLoopEnd onConnect onNoConnection ) ],
+	scalar	=> [ qw( host port urimap uriregex timeout onLoopBegin onLoopEnd onConnect onNoConnection ) ],
 	new	=> [ qw( -init new ) ],
 ];
 
@@ -23,6 +23,8 @@ sub init {
 
 	$self->urimap({});
 
+	$self->uriregex({});
+
 	$self->onLoopBegin($args->{onLoopBegin});
 
 	$self->onLoopEnd($args->{onLoopEnd});
@@ -32,28 +34,64 @@ sub init {
 	$self->onNoConnection($args->{onNoConnection});
 }
 
+sub _uriprep {
+	my ($self, $uri, $func) = @_;
+
+    if ($uri =~ /[:\*]/) {
+        my @paramlist = ();
+
+        my $duri = $uri;
+
+        if ($duri =~ /(\*(.+?))$/) {
+            my $param = $2;
+
+            my $match = "\\*$param";
+
+            $duri =~ s/$match/(.+?)/g;
+
+            push @paramlist, $param;
+        }
+
+        while ($duri =~ /(:(\w+))/) {
+            my $match = $1;
+
+            push @paramlist, $2;
+
+            $duri =~ s/$match/(\\w+)/;
+        }
+
+        $self->uriregex->{$duri}{func} = $func;
+
+        $self->uriregex->{$duri}{params} = \@paramlist;
+    }
+
+    else {
+        $self->urimap->{$uri} = $func;
+    }
+}
+
 sub get {
 	my ($self, $uri, $func) = @_;
 
-	$self->urimap->{$uri} = $func;
+    $self->_uriprep($uri, $func);
 }
 
 sub post {
 	my ($self, $uri, $func) = @_;
 
-	$self->urimap->{$uri} = $func;
+    $self->_uriprep($uri, $func);
 }
 
 sub put {
 	my ($self, $uri, $func) = @_;
 
-	$self->urimap->{$uri} = $func;
+    $self->_uriprep($uri, $func);
 }
 
 sub delete {
 	my ($self, $uri, $func) = @_;
 
-	$self->urimap->{$uri} = $func;
+    $self->_uriprep($uri, $func);
 }
 
 sub run {
@@ -126,8 +164,34 @@ sub process {
 	if (defined $f) {
 		&$f($request, $response);
 	}
+
 	else {
-		$response->write("", { status => 404 });
+        my $done = 0;
+
+        foreach my $re (keys %{ $self->uriregex }) {
+            my @matches = ($request->path =~ /$re/);
+
+            if (@matches) {
+                my $f = $self->uriregex->{$re}{func};
+
+                my $list = $self->uriregex->{$re}{params};
+
+                
+                for (my $i = 0; $i < @$list; $i++) {
+                    $request->params->{$list->[$i]} = $matches[$i];
+                }
+
+                if (defined $f) {
+                    &$f($request, $response);
+
+                    $done = 1;
+
+                    last;
+                }
+            }
+        }
+
+		$response->write("", { status => 404 }) if ! $done;
 	}
 }
 

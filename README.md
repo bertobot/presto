@@ -41,6 +41,33 @@ $app->get('/test', sub {
         $res->chunk;
 });
 
+
+# named parameters
+
+$app->get('/phonebook/add/:name/:number', sub {
+    my ($req, $res) = @_;
+
+    my $message = sprintf "added %s => %s", $req->params->{name}, $req->params->{number};
+
+    $res->write($message);
+
+});
+
+
+# blob parameter
+
+# /blog/2014/10/31, date will be '2014/10/31'
+
+$app->get('/blog/(*date)', sub {
+
+    my ($req, $res) = @_;
+
+    my $date = $req->params->{date};
+
+    $res->write("date: $date");
+});
+
+
 # json example
 
 use JSON;
@@ -114,7 +141,7 @@ $app->run;
 - IO::Select
 
 ## TODO
-- [ ] Support placeholder shortcuts like */hello/:name*
+- [X] Support placeholder shortcuts like */hello/:name*
 - [X] Document the three objects (Request, Response and REST) of this project.
 - [ ] Support redirect, forward in Response object.
 - [ ] Built-in support for JSON ?

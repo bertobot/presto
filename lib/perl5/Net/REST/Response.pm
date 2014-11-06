@@ -21,9 +21,10 @@ sub init {
 	$self->codes({
 		200	=> 'OK',
 		301	=> 'Not Modified',
-		302	=> 'Moved Temporarily',
+		302	=> 'Found',
 		304	=> 'Moved Permanently',
-		400	=> 'Not Found',
+		400	=> 'Bad Request',
+		404	=> 'Not Found',
 		500	=> 'Internal Server Error',
 	});
 
@@ -81,6 +82,30 @@ sub chunk {
 	my $channel = $self->channel;
 
 	printf $channel "%x\r\n%s\r\n", length($body), $body;
+}
+
+sub redirect {
+	my ($self, $url) = @_;
+
+	my $channel = $self->channel;
+
+    my $status = 301;
+
+	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
+
+    printf $channel "Location: %s\r\n\r\n", $url;
+}
+
+sub forward {
+	my ($self, $url) = @_;
+
+	my $channel = $self->channel;
+
+    my $status = 302;
+
+	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
+
+    printf $channel "Location: %s\r\n\r\n", $url;
 }
 
 1;

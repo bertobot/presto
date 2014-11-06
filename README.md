@@ -140,12 +140,6 @@ $app->run;
 - IO::Socket::INET
 - IO::Select
 
-## TODO
-- [X] Support placeholder shortcuts like */hello/:name*
-- [X] Document the three objects (Request, Response and REST) of this project.
-- [X] Support redirect, forward in Response object.
-- ~~[ ] Built-in support for JSON ?~~
-
 ## Methods
 ### Net::REST
 
@@ -181,3 +175,5 @@ $app->run;
 * begin($args) - begin a response with **Encoding-Type: chunked**.  $args is a hash reference to include with the response, like the *type* shortcut or to provide headers.
 
 * chunk($body) - send the next payload chunk.  Send and empty chunk() call to end the chunked-type encoding.
+* redirect($url) - redirect to the url provided, via HTTP 301.
+* forward($url) - redirect to the url provided, via HTTP 302.

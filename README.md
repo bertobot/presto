@@ -58,7 +58,7 @@ $app->get('/phonebook/add/:name/:number', sub {
 
 # /blog/2014/10/31, date will be '2014/10/31'
 
-$app->get('/blog/(*date)', sub {
+$app->get('/blog/*date', sub {
 
     my ($req, $res) = @_;
 

@@ -143,8 +143,8 @@ $app->run;
 ## TODO
 - [X] Support placeholder shortcuts like */hello/:name*
 - [X] Document the three objects (Request, Response and REST) of this project.
-- [ ] Support redirect, forward in Response object.
-- [ ] Built-in support for JSON ?
+- [X] Support redirect, forward in Response object.
+- ~~[ ] Built-in support for JSON ?~~
 
 ## Methods
 ### Net::REST

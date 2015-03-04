@@ -35,7 +35,7 @@ sub init {
 }
 
 sub _uriprep {
-	my ($self, $uri, $func) = @_;
+	my ($self, $method, $uri, $func) = @_;
 
     if ($uri =~ /[:\*]/) {
         my @paramlist = ();
@@ -60,38 +60,38 @@ sub _uriprep {
             $duri =~ s/$match/(\\w+)/;
         }
 
-        $self->uriregex->{$duri}{func} = $func;
+        $self->uriregex->{$method}->{$duri}{func} = $func;
 
-        $self->uriregex->{$duri}{params} = \@paramlist;
+        $self->uriregex->{$method}->{$duri}{params} = \@paramlist;
     }
 
     else {
-        $self->urimap->{$uri} = $func;
+        $self->urimap->{$method}->{$uri} = $func;
     }
 }
 
 sub get {
 	my ($self, $uri, $func) = @_;
 
-    $self->_uriprep($uri, $func);
+    $self->_uriprep('GET', $uri, $func);
 }
 
 sub post {
 	my ($self, $uri, $func) = @_;
 
-    $self->_uriprep($uri, $func);
+    $self->_uriprep('POST', $uri, $func);
 }
 
 sub put {
 	my ($self, $uri, $func) = @_;
 
-    $self->_uriprep($uri, $func);
+    $self->_uriprep('PUT', $uri, $func);
 }
 
 sub delete {
 	my ($self, $uri, $func) = @_;
 
-    $self->_uriprep($uri, $func);
+    $self->_uriprep('DELETE', $uri, $func);
 }
 
 sub run {
@@ -159,7 +159,7 @@ sub process {
 
 	my $response = new Net::REST::Response({ channel => $channel });
 
-	my $f = $self->urimap->{$request->path};
+	my $f = $self->urimap->{$request->method}->{$request->path};
 
 	if (defined $f) {
 		&$f($request, $response);
@@ -168,13 +168,13 @@ sub process {
 	else {
         my $done = 0;
 
-        foreach my $re (keys %{ $self->uriregex }) {
+        foreach my $re (keys %{ $self->uriregex->{$request->method} }) {
             my @matches = ($request->path =~ /$re/);
 
             if (@matches) {
-                my $f = $self->uriregex->{$re}{func};
+                my $f = $self->uriregex->{$request->method}->{$re}{func};
 
-                my $list = $self->uriregex->{$re}{params};
+                my $list = $self->uriregex->{$request->method}->{$re}{params};
 
                 
                 for (my $i = 0; $i < @$list; $i++) {

@@ -40,6 +40,18 @@ $app->get('/test', sub {
 	$res->chunk("", 1);
 });
 
+$app->get('/same', sub {
+	my ($req, $res) = @_;
+	
+	$res->write("/same with GET method", { type => 'text/text' });
+});
+
+$app->delete('/same', sub {
+	my ($req, $res) = @_;
+	
+	$res->write("/same with DELETE method", { type => 'text/text' });
+});
+
 $app->onLoopBegin(sub { print "starting loop\n"; } );
 
 $app->onLoopEnd(sub { print "ending loop\n"; } );

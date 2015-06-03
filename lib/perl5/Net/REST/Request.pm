@@ -2,8 +2,8 @@ package Net::REST::Request;
 
 use strict;
 
+use JSON;
 use Net::REST::BufferedReader;
-
 use Class::MethodMaker [
 	scalar	=> [ qw( uri path query params error method version headers body ) ],
 	new	=> [ qw( -init new ) ],
@@ -84,5 +84,11 @@ sub decode {
 	return $args;
 }
 
+sub json {
+    my ($self, $args) = @_;
+    return decode_json($self->body);
+}
+
+# vim: ts=4:sw=4:expandtab
 1;
 

@@ -2,6 +2,7 @@ package Net::REST::Response;
 
 use strict;
 
+use JSON;
 use Class::MethodMaker [
 	scalar	=> [ qw( type headers status channel codes ) ],
 	new	=> [ qw( -init new ) ],
@@ -106,6 +107,11 @@ sub forward {
 	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
 
     printf $channel "Location: %s\r\n\r\n", $url;
+}
+
+sub json {
+    my ($self, $args) = @_;
+    $self->write(encode_json($args), { type => 'application/json' } );
 }
 
 1;

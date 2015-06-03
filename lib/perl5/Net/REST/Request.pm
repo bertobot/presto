@@ -2,8 +2,10 @@ package Net::REST::Request;
 
 use strict;
 
+use Net::REST::BufferedReader;
+
 use Class::MethodMaker [
-	scalar	=> [ qw( uri path query params error method version headers ) ],
+	scalar	=> [ qw( uri path query params error method version headers body ) ],
 	new	=> [ qw( -init new ) ],
 ];
 
@@ -14,9 +16,13 @@ sub init {
 	
 	$self->headers({});
 
+    $self->body('');
+
 	my $channel = $args->{channel};
 
-	my $line = <$channel>;
+    my $br = new Net::REST::BufferedReader({ fd => $channel });
+
+	my $line = $br->readLine;
 
 	chomp $line;
 
@@ -48,7 +54,7 @@ sub init {
 		}
 	}
 
-	while ($line = <$channel>) {
+	while ($line = $br->readLine) {
 		chomp $line;
 		$line =~ s/\s+$//;
 
@@ -58,6 +64,11 @@ sub init {
 
 		$self->headers->{$tokens[0]} = $tokens[1];
 	}
+
+    # if the header has a content-length, read it into body
+    if ($self->headers->{'Content-Length'}) {
+        $self->body($br->read({ 'length' => $self->headers->{'Content-Length'} }) );
+    }
 }
 
 sub decode {

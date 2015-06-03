@@ -164,6 +164,7 @@ $app->run;
 * method - request method.
 * version - HTTP request version.
 * headers - HTTP headers of the request.
+* body - the content body, usually associated with POST, PUT and DELETE
 
 ### Net::REST::Response
 * type - the content-type shortcut of the response.

@@ -140,6 +140,7 @@ $app->run;
 - Class::MethodMaker
 - IO::Socket::INET
 - IO::Select
+- JSON
 
 ## Methods
 ### Net::REST
@@ -165,7 +166,9 @@ $app->run;
 * method - request method.
 * version - HTTP request version.
 * headers - HTTP headers of the request.
-* body - the content body, usually associated with POST, PUT and DELETE
+* body - the content body, usually associated with POST, PUT and DELETE.
+* json - if the body is a json object, it returns a hash representation (decoded json).
+
 
 ### Net::REST::Response
 * type - the content-type shortcut of the response.
@@ -179,3 +182,4 @@ $app->run;
 * chunk($body) - send the next payload chunk.  Send and empty chunk() call to end the chunked-type encoding.
 * redirect($url) - redirect to the url provided, via HTTP 301.
 * forward($url) - redirect to the url provided, via HTTP 302.
+* json($hash) - encodes hash in json and writes it back to the client.

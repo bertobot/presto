@@ -61,6 +61,18 @@ $app->post('/post', sub {
     $res->write("ok\n", { type => 'text/text' } );
 });
 
+$app->get('/hellojson/:name', sub {
+    my ($req, $res) = @_;
+    
+    $res->json({ "hello" => $req->params->{name} });
+});
+
+$app->post('/echojson', sub {
+    my ($req, $res) = @_;
+    
+    $res->json($req->json);
+});
+
 $app->onLoopBegin(sub { print "starting loop\n"; } );
 
 $app->onLoopEnd(sub { print "ending loop\n"; } );

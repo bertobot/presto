@@ -70,23 +70,24 @@ $app->get('/blog/*date', sub {
 
 # json example
 
-use JSON;
-
 $app->post('/json/post', sub {
         my ($req, $res) = @_;
         
-        my $jsonstr = $req->body;
-        
-        my $jshash = decode_json($jsonstr);
-        
+        # request->json will attempt to json-decode request body
+
+        my $json_hash = $req->json;
+
         # do something with that data
         
-        $res->write( encode_json( { 'status' => 'ok' }, { type => 'application/json' } ) );
+        # response->json is a wrapper of response->write where it 
+        # json-encodes the payload, with a content-type of application/json
+
+        $res->json({ 'status' => 'ok' });
 });
 
 $app->get('/json/get', sub {
         # lazy one liner
-        $_[1]->write( encode_json({ key => 'value', anotherKey => [] }), { type => 'application/json' } );
+        $_[1]->json({ key => 'value', anotherKey => [] });
 });
 
 # run

@@ -52,6 +52,15 @@ $app->delete('/same', sub {
 	$res->write("/same with DELETE method", { type => 'text/text' });
 });
 
+$app->post('/post', sub {
+    my ($req, $res) = @_;
+
+    print Dumper "Request:";
+    print Dumper $req;
+
+    $res->write("ok\n", { type => 'text/text' } );
+});
+
 $app->onLoopBegin(sub { print "starting loop\n"; } );
 
 $app->onLoopEnd(sub { print "ending loop\n"; } );

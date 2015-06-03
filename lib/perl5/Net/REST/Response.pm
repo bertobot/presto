@@ -4,9 +4,19 @@ use strict;
 
 use JSON;
 use Class::MethodMaker [
-	scalar	=> [ qw( type headers status channel codes ) ],
+	scalar	=> [ qw( type headers status channel ) ],
 	new	=> [ qw( -init new ) ],
 ];
+
+our $codes = {
+    200	=> 'OK',
+    301	=> 'Not Modified',
+    302	=> 'Found',
+    304	=> 'Moved Permanently',
+    400	=> 'Bad Request',
+    404	=> 'Not Found',
+    500	=> 'Internal Server Error',
+};
 
 sub init {
 	my ($self, $args) = @_;
@@ -18,17 +28,6 @@ sub init {
 	$self->headers($args->{headers} || {});
 
 	$self->status($args->{status} || 200);
-
-	$self->codes({
-		200	=> 'OK',
-		301	=> 'Not Modified',
-		302	=> 'Found',
-		304	=> 'Moved Permanently',
-		400	=> 'Bad Request',
-		404	=> 'Not Found',
-		500	=> 'Internal Server Error',
-	});
-
 }
 
 sub write {
@@ -44,7 +43,7 @@ sub write {
 
 	$headers->{"Content-Length"} = length($body) if ! $headers->{"Content-Length"};
 
-	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
+	printf $channel "HTTP/1.1 %s %s\r\n", $status, $codes->{$status};
 
 	foreach my $h (keys %$headers) {
 		printf $channel "%s: %s\r\n", $h, $headers->{$h};
@@ -68,7 +67,7 @@ sub begin {
 
 	$headers->{"Transfer-Encoding"} = "chunked";
 
-	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
+	printf $channel "HTTP/1.1 %s %s\r\n", $status, $codes->{$status};
 
 	foreach my $h (keys %$headers) {
 		printf $channel "%s: %s\r\n", $h, $headers->{$h};
@@ -92,7 +91,7 @@ sub redirect {
 
     my $status = 301;
 
-	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
+	printf $channel "HTTP/1.1 %s %s\r\n", $status, $codes->{$status};
 
     printf $channel "Location: %s\r\n\r\n", $url;
 }
@@ -104,7 +103,7 @@ sub forward {
 
     my $status = 302;
 
-	printf $channel "HTTP/1.1 %s %s\r\n", $status, $self->codes->{$status};
+	printf $channel "HTTP/1.1 %s %s\r\n", $status, $codes->{$status};
 
     printf $channel "Location: %s\r\n\r\n", $url;
 }

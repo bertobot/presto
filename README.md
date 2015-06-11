@@ -11,20 +11,19 @@ use strict;
 use Net::REST;
 
 
-# explcit function definition example
-sub helloworld {
+my $app = new Net::REST({ port => 2020 });
+
+# hello world example
+
+$app->get("/hello", sub {
+
         my ($request, $response) = @_;
 
         $response->write("hello world!");
-}
-
-my $app = new Net::REST({ port => 2020 });
-
-$app->get("/hello", \&helloworld);
+});
 
 
-
-# anonymous function definition example
+# chunked transfer encoding example
 
 $app->get('/test', sub {
         my ($req, $res) = @_;
@@ -83,11 +82,6 @@ $app->post('/json/post', sub {
         # json-encodes the payload, with a content-type of application/json
 
         $res->json({ 'status' => 'ok' });
-});
-
-$app->get('/json/get', sub {
-        # lazy one liner
-        $_[1]->json({ key => 'value', anotherKey => [] });
 });
 
 # run

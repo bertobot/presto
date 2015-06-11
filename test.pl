@@ -7,13 +7,13 @@ use Data::Dumper;
 use Net::REST;
 
 sub helloworld {
-	my ($request, $response) = @_;
+    my ($request, $response) = @_;
 
     my $subject = $request->params->{name} || 'world';
 
     print Dumper $request;
 
-	$response->write("hello $subject!");
+    $response->write("hello $subject!");
 }
 
 my $app = new Net::REST({ port => 2020 });
@@ -29,27 +29,27 @@ $app->get("/blah/*blah", sub {
 });
 
 $app->get('/test', sub {
-	my ($req, $res) = @_;
+    my ($req, $res) = @_;
 
-	$res->begin();
+    $res->begin();
 
-	foreach my $p (keys %{ $req->params }) {
-		$res->chunk(sprintf("%s => %s\n", $p, $req->params->{$p}) );
-	}
+    foreach my $p (keys %{ $req->params }) {
+        $res->chunk(sprintf("%s => %s\n", $p, $req->params->{$p}) );
+    }
 
-	$res->chunk("", 1);
+    $res->chunk("", 1);
 });
 
 $app->get('/same', sub {
-	my ($req, $res) = @_;
-	
-	$res->write("/same with GET method", { type => 'text/text' });
+    my ($req, $res) = @_;
+
+    $res->write("/same with GET method", { type => 'text/text' });
 });
 
 $app->delete('/same', sub {
-	my ($req, $res) = @_;
-	
-	$res->write("/same with DELETE method", { type => 'text/text' });
+    my ($req, $res) = @_;
+
+    $res->write("/same with DELETE method", { type => 'text/text' });
 });
 
 $app->post('/post', sub {
@@ -63,16 +63,17 @@ $app->post('/post', sub {
 
 $app->get('/hellojson/:name', sub {
     my ($req, $res) = @_;
-    
+
     $res->json({ "hello" => $req->params->{name} });
 });
 
 $app->post('/echojson', sub {
     my ($req, $res) = @_;
-    
+
     $res->json($req->json);
 });
 
+# hooks
 $app->onLoopBegin(sub { print "starting loop\n"; } );
 
 $app->onLoopEnd(sub { print "ending loop\n"; } );
@@ -80,18 +81,7 @@ $app->onLoopEnd(sub { print "ending loop\n"; } );
 $app->onNoConnection(sub { print "nobody wants to play with me\n"; } );
 
 $app->onConnect( sub { printf "%s:%s connected.\n", $_[0]->peerhost, $_[0]->peerport; } );
-		
+        
 
-#$app->get("/hellojson/:name", sub {
-#	my ($req, $res) = @_;
-#
-#	my $r = { hello => $req->params->{name} };
-#
-#	$res->writeJson($r);
-#
-#	# equivalent
-#	# $res->write(json_encode($r), "application/json");
-#	
-#});
-
+# run app
 $app->run();

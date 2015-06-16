@@ -126,11 +126,11 @@ $app->run;
 
 ```
 
-# Features
+## Features
 - GET, POST, PUT, DELETE handling.
 - Write standalone REST servers that can then be fronted by nginx, etc.
 
-# Dependencies
+## Dependencies
 - Class::MethodMaker
 - IO::Socket::INET
 - IO::Select
@@ -138,13 +138,13 @@ $app->run;
 
 > curl -L http://cpanmin.us | perl - --sudo --install Class::MethodMaker JSON
 
-# Methods
-## Net::REST
+## Methods
+### Net::REST
 
-### get() - HTTP GET method handler.
-### post() - HTTP POST method handler.
-### put() - HTTP PUT method handler.
-### delete() - HTTP DELETE method handler.
+* get() - HTTP GET method handler.
+* post() - HTTP POST method handler.
+* put() - HTTP PUT method handler.
+* delete() - HTTP DELETE method handler.
 
 * onLoopBegin() - hook on loop start.
 * onLoopEnd() - hook on loop end.

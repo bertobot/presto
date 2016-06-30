@@ -130,12 +130,19 @@ sub run {
 					&{ $self->onConnect }($client);
 				}
 			}
-			else{
+            else{
 
-				my $request = new Net::REST::Request({ channel => $r });
+                my $request = new Net::REST::Request({ channel => $r });
 
-				if ($request->error) {
-					# TODO: log
+                if ($request->error) {
+                
+                    $select->remove($r);
+
+                    $r->close;
+
+                    # TODO: support onError callback?
+
+                    next;
 				}
 
 				$self->process($request, $r);

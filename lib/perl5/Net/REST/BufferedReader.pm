@@ -34,6 +34,8 @@ sub read {
 
             my $rc = sysread($self->fd, $tbuffer, $args->{'length'} - $lbuf);
 
+            last if ! $rc;
+
             $self->buffer($self->buffer . $tbuffer);
 
             $lbuf += $rc;
@@ -58,7 +60,14 @@ sub readLine {
         $self->buffer(substr($self->buffer, length($result) + length($2)) );
     }
     else {
-        $self->buffer($self->read({ 'length' => $self->chunksize }) );
+        my $buffer = $self->read({ 'length' => $self->chunksize });
+
+        if (! length($buffer)) {
+            return $self->buffer
+        }
+
+        $self->buffer($buffer);
+        
         return $self->readLine;
     }
 

@@ -1,4 +1,4 @@
 
 install:
-	sudo rsync -av lib/perl5/Net /usr/local/share/perl5/
+	sudo rsync -av lib/perl5/Net /usr/local/lib/site_perl/
 

@@ -84,6 +84,20 @@ $app->post('/json/post', sub {
         $res->json({ 'status' => 'ok' });
 });
 
+
+# single file example
+
+$app->get('/file01', sub {
+    my ($req, $res) = @_;
+    $res->file('./test01.html');
+});
+
+$app->get('/file02', sub {
+    my ($req, $res) = @_;
+    $res->file('./test02.txt');
+});
+
+
 # run
 
 $app->run();

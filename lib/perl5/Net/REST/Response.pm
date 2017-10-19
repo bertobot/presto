@@ -113,5 +113,25 @@ sub json {
     $self->write(encode_json($args), { type => 'application/json' } );
 }
 
+sub file {
+    my ($self, $filename, $args) = @_;
+
+    if (open FILE, $filename) {
+        $self->begin();
+        while (1) {
+            my $buffer;
+            my $rc = sysread FILE, $buffer, 8192;
+           
+            last if ! $rc;
+
+            $self->chunk($buffer);
+        }
+        $self->chunk();
+    }
+    else {
+        $self->write("", { status => 404 });
+    }
+}
+
 1;
 

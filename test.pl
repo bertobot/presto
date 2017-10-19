@@ -73,6 +73,17 @@ $app->post('/echojson', sub {
     $res->json($req->json);
 });
 
+# file test
+$app->get('/file01', sub {
+    my ($req, $res) = @_;
+    $res->file("./test01.html");
+});
+
+$app->get('/file02', sub {
+    my ($req, $res) = @_;
+    $res->file("./test02.txt");
+});
+
 # hooks
 $app->onLoopBegin(sub { print "starting loop\n"; } );
 

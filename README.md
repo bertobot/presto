@@ -193,3 +193,4 @@ $app->run;
 * redirect($url) - redirect to the url provided, via HTTP 301.
 * forward($url) - redirect to the url provided, via HTTP 302.
 * json($hash) - encodes hash in json and writes it back to the client.
+* file($filename) - yields the contents of $filename, else 404.
